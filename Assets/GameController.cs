@@ -32,14 +32,14 @@ public class GameController : MonoBehaviour {
 			playerOneCounter++;
 			nextFire = Time.time + fireRate;
 			playerOneText.text = "Score: "+playerOneCounter;
-			thePlayerTwoLast = false;
+			//thePlayerTwoLast = false;
 
 		}
 		if (thePlayerTwoLast && outofGame && Time.time > nextFire) {
 			playerTwoCounter++;
 			playerTwoText.text = "Score: "+playerTwoCounter;
 			nextFire = Time.time + fireRate;
-			theplayerOneLast = false;
+			//theplayerOneLast = false;
 		}
 	}
 }
