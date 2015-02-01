@@ -12,7 +12,6 @@ public class Rotator : MonoBehaviour {
 	public float speed;
 	public float maxSpeed;
 	Vector3 direction;
-	Vector3 startDirection;
 
 	bool willCatch;
 	public bool flyBack;
@@ -26,10 +25,10 @@ public class Rotator : MonoBehaviour {
 	}
 
 	void Update(){
+		transform.up = startPoint.transform.up;
 		transform.forward = direction;
 		if (direction.magnitude < distance && !flyBack) {
 			transform.position += transform.right * speed;
-
 		} else {
 			transform.position += transform.forward * speed;
 		}
@@ -45,18 +44,20 @@ public class Rotator : MonoBehaviour {
 		} else if (!willCatch && speed >= maxSpeed) {
 			speed = maxSpeed;
 		}
+
 		if (flyBack) {
-			direction = startPoint.transform.position - transform.position;
-			}
-		if (reachedStart && !flyBack) {
 			transform.rotation = Quaternion.identity;
-			transform.position = startPoint.transform.position;
-			print("yeah");
-			//flyBack = false;
+			print(flyBack);
+			if (reachedStart){
+				transform.position = startPoint.transform.position;
+				transform.rotation = Quaternion.identity;
+			}
+			else{
+				direction = startPoint.transform.position - transform.position;
+			}
 		}
-		
-		if (reachedStart && Input.GetKey ("space")) {
-			//flyBack = false;
+		if (flyBack && transform.position == startPoint.position && Input.GetKey ("space")) {
+			flyBack = false;
 			theController.audio.PlayOneShot(startSound);
 			if (theController.GetComponent<GameController> ().thePlayerTwoLast == true){
 				direction = playerOne.transform.position - transform.position;
@@ -71,21 +72,19 @@ public class Rotator : MonoBehaviour {
 		}
 	}
 
-	void OnTriggerEnter (Collider other){
-		print(other.gameObject.name);
-		if (other.gameObject.name == "StartPoint" && flyBack){
-			reachedStart = true;
-			flyBack = false;
-		}
-	}
-
 	void OnTriggerStay(Collider other) {
 		if (willCatch == true && Input.GetButton ("Fire1") && other.gameObject.name == "Player_1"){
 			direction = other.transform.position - transform.position;
+			theController.GetComponent<GameController>().theplayerOneLast = true;
+			theController.GetComponent<GameController>().thePlayerTwoLast = false;
 		}
 		if (willCatch == true && Input.GetButton ("Fire2") && other.gameObject.name == "Player_2"){
 			direction = other.transform.position - transform.position;
+			theController.GetComponent<GameController>().thePlayerTwoLast = true;
+			theController.GetComponent<GameController>().theplayerOneLast = false;
 		}
-
+		if (other.gameObject.name == "StartPoint" && flyBack){
+		    reachedStart = true;
+		}
 	}
 }
